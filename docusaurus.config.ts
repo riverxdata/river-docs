@@ -13,7 +13,7 @@ const config: Config = {
 	url: "https://riverxdata.github.io",
 	// Set the /<baseUrl>/ pathname under which your site is served
 	// For GitHub pages deployment, it is often '/<projectName>/'
-	baseUrl: "/docs",
+	baseUrl: "/",
 	trailingSlash: false,
 	// GitHub pages deployment config.
 	// If you aren't using GitHub pages, you don't need these.
@@ -93,7 +93,7 @@ const config: Config = {
 					items: [
 						{
 							label: "Tutorial",
-							to: "/docs/intro",
+							to: "/docs/Introduction",
 						},
 					],
 				},
@@ -106,19 +106,6 @@ const config: Config = {
 						},
 					],
 				},
-				{
-					title: "More",
-					items: [
-						{
-							label: "Blog",
-							to: "/blog",
-						},
-						{
-							label: "GitHub",
-							href: "https://github.com/facebook/docusaurus",
-						},
-					],
-				},
 			],
 			copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
 		},
@@ -127,6 +114,17 @@ const config: Config = {
 			darkTheme: prismThemes.dracula,
 		},
 	} satisfies Preset.ThemeConfig,
+	plugins: [
+		[
+			require.resolve("@easyops-cn/docusaurus-search-local"),
+			{
+				hashed: true,
+				indexDocs: true,
+				indexBlog: true,
+				indexPages: true,
+			},
+		],
+	],
 };
 
 export default config;
