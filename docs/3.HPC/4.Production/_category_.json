@@ -1,8 +1,0 @@
-{
-	"label": "Industry",
-	"position": 3,
-	"link": {
-		"type": "generated-index",
-		"description": "The standard industrial set up for SLURM cluster"
-	}
-}
