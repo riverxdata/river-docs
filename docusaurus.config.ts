@@ -6,7 +6,8 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
 	title: "RiverXData",
-	tagline: "Simple, Effective, Efficient",
+	tagline:
+		'"Simple, Effective, Efficient" powered by River (nttg8100@gmail.com)',
 	favicon: "img/logo-riverxdata-02.png",
 
 	// Set the production url of your site here
@@ -63,12 +64,26 @@ const config: Config = {
 	],
 
 	themeConfig: {
-		// Replace with your project's social card
+		metadata: [
+			{
+				name: "keywords",
+				content: "bioinformatics, data, infrastructure, hpc, cloud",
+			},
+			{
+				name: "description",
+				content:
+					"RiverXData - Simple, Effective, Efficient bioinformatics data infrastructure.",
+			},
+			{
+				name: "author",
+				content: "RiverXData Team",
+			},
+		],
 		image: "img/docusaurus-social-card.jpg",
 		navbar: {
 			title: "RiverXData",
 			logo: {
-				alt: "My Site Logo",
+				alt: "RiverXData Logo",
 				src: "img/logo-riverxdata-02.png",
 			},
 			items: [
@@ -107,7 +122,7 @@ const config: Config = {
 					],
 				},
 			],
-			copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+			copyright: `Copyright © ${new Date().getFullYear()} RiverXData`,
 		},
 		prism: {
 			theme: prismThemes.github,
@@ -122,6 +137,13 @@ const config: Config = {
 				indexDocs: true,
 				indexBlog: true,
 				indexPages: true,
+			},
+		],
+		[
+			"@docusaurus/plugin-google-analytics",
+			{
+				trackingID: "G-0VTLR3Y35K",
+				anonymizeIP: true,
 			},
 		],
 	],
