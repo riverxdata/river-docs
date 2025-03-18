@@ -140,7 +140,7 @@ const config: Config = {
 			},
 		],
 		[
-			"@docusaurus/plugin-google-analytics",
+			"@docusaurus/plugin-google-gtag",
 			{
 				trackingID: "G-0BBYTVWQV2",
 				anonymizeIP: true,
