@@ -27,10 +27,10 @@ jobs:
               with:
                   node-version: 18
 
-            - name: Install Dependencies, 
+            - name: Install Dependencies,
               run: |
-              # it is for docs with markdown, so do not need to be restricted
-              yarn install --no-lockfile
+                  # it is for docs with markdown, so do not need to be restricted
+                  yarn install --no-lockfile
 
             - name: Build Docusaurus
               run: yarn build
