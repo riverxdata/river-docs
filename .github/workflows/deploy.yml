@@ -1,0 +1,35 @@
+name: Deploy Docusaurus
+
+on:
+    push:
+        branches:
+            - main
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v4
+
+            - name: Set up SSH Key
+              run: |
+                  mkdir -p ~/.ssh
+                  echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+                  chmod 600 ~/.ssh/id_rsa
+                  ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+            - name: Install Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+
+            - name: Install Dependencies,
+              run: |
+                  # it is for docs with markdown, so do not need to be restricted
+                  yarn install --no-lockfile
+
+            - name: Build Docusaurus
+              run: yarn build
+
+            - name: Deploy via SSH
+              run: USE_SSH=true yarn deploy
