@@ -1,148 +1,171 @@
-import { themes as prismThemes } from "prism-react-renderer";
+import { themes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
-
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 const config: Config = {
-	title: "RiverXData",
-	tagline:
-		'"Simple, Effective, Efficient" powered by River (nttg8100@gmail.com)',
-	favicon: "img/logo-riverxdata-02.png",
+  title: "RiverXData",
+  tagline:
+    '"Simple, Effective, Efficient" powered by River (nttg8100@gmail.com)',
+  favicon: "img/logo-riverxdata-02.png",
 
-	// Set the production url of your site here
-	url: "https://riverxdata.github.ios",
-	// Set the /<baseUrl>/ pathname under which your site is served
-	// For GitHub pages deployment, it is often '/<projectName>/'
-	baseUrl: "/river-docs/",
-	trailingSlash: false,
-	// GitHub pages deployment config.
-	// If you aren't using GitHub pages, you don't need these.
-	organizationName: "riverxdata", // Usually your GitHub org/user name.
-	projectName: "river-docs", // Usually your repo name.
+  url: "https://riverxdata.github.io",
+  baseUrl: "/river-docs/",
+  trailingSlash: false,
 
-	onBrokenLinks: "throw",
-	onBrokenMarkdownLinks: "warn",
+  organizationName: "riverxdata",
+  projectName: "river-docs",
 
-	// Even if you don't use internationalization, you can use this field to set
-	// useful metadata like html lang. For example, if your site is Chinese, you
-	// may want to replace "en" with "zh-Hans".
-	i18n: {
-		defaultLocale: "en",
-		locales: ["en"],
-	},
+  onBrokenLinks: "throw",
 
-	presets: [
-		[
-			"classic",
-			{
-				docs: {
-					sidebarPath: "./sidebars.ts",
-				},
-				blog: {
-					showReadingTime: true,
-					feedOptions: {
-						type: ["rss", "atom"],
-						xslt: true,
-					},
-					// Please change this to your repo.
-					// Remove this to remove the "edit this page" links.
-					onInlineTags: "warn",
-					onInlineAuthors: "warn",
-					onUntruncatedBlogPosts: "warn",
-				},
-				theme: {
-					customCss: "./src/css/custom.css",
-				},
-			} satisfies Preset.Options,
-		],
-	],
+  i18n: {
+    defaultLocale: "en",
+    locales: ["en"],
+  },
+  stylesheets: [
+    {
+      href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
+      type: 'text/css',
+      integrity:
+        'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
+      crossorigin: 'anonymous',
+    },
+  ],
+  presets: [
+    [
+      "classic",
+      {
+        docs: {
+          sidebarPath: "./sidebars.ts",
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
+        },
+        blog: false,
+        theme: {
+          customCss: "./src/css/custom.css",
+        },
+        gtag: {
+          trackingID: "G-0BBYTVWQV2",
+          anonymizeIP: true,
+        },
+      } satisfies Preset.Options,
+    ],
+  ],
 
-	themeConfig: {
-		metadata: [
-			{
-				name: "keywords",
-				content: "bioinformatics, data, infrastructure, hpc, cloud",
-			},
-			{
-				name: "description",
-				content:
-					"RiverXData - Simple, Effective, Efficient bioinformatics data infrastructure.",
-			},
-			{
-				name: "author",
-				content: "RiverXData Team",
-			},
-		],
-		image: "img/docusaurus-social-card.jpg",
-		navbar: {
-			title: "RiverXData",
-			logo: {
-				alt: "RiverXData Logo",
-				src: "img/logo-riverxdata-02.png",
-			},
-			items: [
-				{
-					type: "docSidebar",
-					sidebarId: "tutorialSidebar",
-					position: "left",
-					label: "Documentation",
-				},
-				{ to: "/blog", label: "Blog", position: "left" },
-				{
-					href: "https://github.com/riverxdata/river",
-					label: "GitHub",
-					position: "right",
-				},
-			],
-		},
-		footer: {
-			style: "dark",
-			links: [
-				{
-					title: "Docs",
-					items: [
-						{
-							label: "Tutorial",
-							to: "/docs/Introduction",
-						},
-					],
-				},
-				{
-					title: "Community",
-					items: [
-						{
-							label: "Facebook",
-							href: "https://www.facebook.com/groups/1134438583997171",
-						},
-					],
-				},
-			],
-			copyright: `Copyright © ${new Date().getFullYear()} RiverXData`,
-		},
-		prism: {
-			theme: prismThemes.github,
-			darkTheme: prismThemes.dracula,
-		},
-	} satisfies Preset.ThemeConfig,
-	plugins: [
-		[
-			require.resolve("@easyops-cn/docusaurus-search-local"),
-			{
-				hashed: true,
-				indexDocs: true,
-				indexBlog: true,
-				indexPages: true,
-			},
-		],
-		[
-			"@docusaurus/plugin-google-gtag",
-			{
-				trackingID: "G-0BBYTVWQV2",
-				anonymizeIP: true,
-			},
-		],
-	],
+  themeConfig: {
+    announcementBar: {
+      id: "support_us",
+      content: "Comming soon: Support us on GitHub Sponsors! ❤️",
+      backgroundColor: "#667eea",
+      textColor: "#ffffff",
+      isCloseable: false,
+    },
+    image: "img/docusaurus-social-card.jpg",
+    customCss: require.resolve("./src/css/custom.css"),
+    metadata: [
+      {
+        name: "keywords",
+        content: "bioinformatics, data, infrastructure, hpc, cloud",
+      },
+      {
+        name: "description",
+        content:
+          "RiverXData - Simple, Effective, Efficient bioinformatics data infrastructure.",
+      },
+      {
+        name: "author",
+        content: "RiverXData Team",
+      },
+    ],
+    navbar: {
+      logo: {
+        alt: "RiverXData",
+        src: "img/logo-riverxdata-02.png",
+      },
+      items: [
+        {
+          type: "docSidebar",
+          sidebarId: "tutorialSidebar",
+          position: "left",
+          label: "Documentation",
+        },
+        {
+          href: "https://github.com/riverxdata/river",
+          label: "GitHub",
+          position: "right",
+        },
+      ],
+    },
+    footer: {
+      style: "dark",
+      links: [
+        {
+          title: "Docs",
+          items: [
+            {
+              label: "Tutorial",
+              to: "/docs/overview",
+            },
+          ],
+        },
+        {
+          title: "Community",
+          items: [
+            {
+              label: "Facebook",
+              href: "https://www.facebook.com/groups/1134438583997171",
+            },
+            {
+              label: "GitHub",
+              href: "https://github.com/riverxdata/river",
+            },
+          ],
+        },
+        {
+          title: "More",
+          items: [
+            {
+              label: "About RiverXData",
+              href: "https://riverxdata.github.ios",
+            },
+          ],
+        },
+      ],
+      copyright: `© ${new Date().getFullYear()} RiverXData`,
+    },
+    prism: {
+      theme: themes.oneLight,
+      darkTheme: themes.oneDark,
+      additionalLanguages: [
+        "bash",
+        "docker",
+        "groovy",
+        "ini",
+        "java",
+        "javascript",
+        "json",
+        "nginx",
+        "python",
+        "r",
+        "shell-session",
+        "sql",
+        "typescript",
+        "yaml"
+      ],
+    },
+  } satisfies Preset.ThemeConfig,
+  plugins: [
+    [
+      require.resolve("@easyops-cn/docusaurus-search-local"),
+      {
+        hashed: true,
+        indexDocs: true,
+        indexBlog: false,
+        indexPages: true,
+      },
+    ],
+  ],
 };
 
 export default config;

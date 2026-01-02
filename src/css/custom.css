@@ -1,28 +1,159 @@
-/**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
- */
-
-/* You can override the default Infima variables here. */
 :root {
-	--ifm-color-primary: #000000;
-	--ifm-color-primary-dark: #5a5a5a;
-	--ifm-color-primary-darker: #979191;
-	--ifm-color-primary-darkest: #d8d2d2;
-	--ifm-color-primary-light: #8a8a8a;
-	--ifm-color-primary-lighter: #a0a0a0;
-	--ifm-color-primary-lightest: #b8b8b8;
-	--docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-font-family-base: "Arial", "Helvetica Neue", Helvetica, sans-serif;
+  --ifm-color-primary: #000000;
+  --ifm-color-primary-dark: #5a5a5a;
+  --ifm-color-primary-darker: #979191;
+  --ifm-color-primary-darkest: #d8d2d2;
+  --ifm-color-primary-light: #8a8a8a;
+  --ifm-color-primary-lighter: #a0a0a0;
+  --ifm-color-primary-lightest: #b8b8b8;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="dark"] {
-	--ifm-color-primary: #b0b0b0;
-	--ifm-color-primary-dark: #a0a0a0;
-	--ifm-color-primary-darker: #909090;
-	--ifm-color-primary-darkest: #808080;
-	--ifm-color-primary-light: #c0c0c0;
-	--ifm-color-primary-lighter: #d0d0d0;
-	--ifm-color-primary-lightest: #e0e0e0;
-	--docusaurus-highlighted-code-line-bg: rgba(243, 227, 227, 0.1);
+  --ifm-color-primary: #b0b0b0;
+  --ifm-color-primary-dark: #a0a0a0;
+  --ifm-color-primary-darker: #909090;
+  --ifm-color-primary-darkest: #808080;
+  --ifm-color-primary-light: #c0c0c0;
+  --ifm-color-primary-lighter: #d0d0d0;
+  --ifm-color-primary-lightest: #e0e0e0;
+  --docusaurus-highlighted-code-line-bg: rgba(243, 227, 227, 0.1);
+}
+
+.menu__link--active {
+  font-weight: bold !important;
+  background-color: #f0f0f0 !important;
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem !important;
+  color: var(--ifm-color-primary) !important;
+}
+
+/* Dark theme */
+[data-theme="dark"] .menu__link--active {
+  background-color: #333333 !important;
+  color: var(--ifm-color-primary-light) !important;
+}
+
+/* Hover state for better UX */
+.menu__link:hover {
+  background-color: #e8e8e8 !important;
+}
+
+[data-theme="dark"] .menu__link:hover {
+  background-color: #424242 !important;
+}
+
+.blog-grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .blog-grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .blog-grid-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.blog-wrapper {
+  max-width: 100%;
+}
+
+.blog-grid-container .title_f1Hy {
+  font-size: 1.5rem !important;
+}
+
+.blog-grid-container .markdown p {
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.blog-grid-container article {
+  padding: 1rem;
+}
+
+.blog-grid-container {
+  padding: 0.5rem;
+}
+
+.page-blog-post-page {
+  padding: 10px;
+}
+
+.announcementBar_mb4j {
+  padding: 1.5rem 0 !important;
+  font-size: 1.2rem !important;
+  min-height: 60px !important;
+}
+
+.announcementBarContent_xLdY {
+  font-weight: 500 !important;
+  font-size: 1.2rem !important;
+  max-width: 100% !important;
+  padding: 0 2rem !important;
+}
+
+/* Add icon before the announcement text */
+.announcementBarContent_xLdY::before {
+  content: "📢 ";
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+/* Style the link */
+.announcementBarContent_xLdY a {
+  font-weight: bold !important;
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  padding: 0.4rem 0.8rem !important;
+  border-radius: 6px !important;
+  text-decoration: none !important;
+  transition: all 0.3s ease !important;
+  display: inline-block !important;
+  margin-left: 0.5rem !important;
+}
+
+.announcementBarContent_xLdY a:hover {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Add icon after the link */
+.announcementBarContent_xLdY a::after {
+  content: " 📝";
+  font-size: 1.1rem;
+  margin-left: 0.3rem;
+}
+
+/* Responsive - smaller on mobile */
+@media (max-width: 768px) {
+  .announcementBar_mb4j {
+    padding: 1rem 0 !important;
+  }
+
+  .announcementBarContent_xLdY {
+    font-size: 1rem !important;
+    padding: 0 1rem !important;
+  }
+
+  .announcementBarContent_xLdY::before {
+    font-size: 1.2rem;
+  }
+}
+
+.katex-html {
+  display: none !important;
 }

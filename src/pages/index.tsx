@@ -20,7 +20,7 @@ function HomepageHeader() {
 				<div className={styles.buttons}>
 					<Link
 						className="button button--secondary button--lg"
-						to="/docs/Introduction"
+						to="/docs/overview"
 					>
 						RiverXData Running Your Own Setup - 5min ⏱️
 					</Link>

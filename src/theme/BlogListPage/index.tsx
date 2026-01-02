@@ -1,5 +1,3 @@
-import React from "react";
-import clsx from "clsx";
 import Layout from "@theme/Layout";
 import { BlogPostProvider } from "@docusaurus/plugin-content-blog/client";
 import BlogPostItem from "@theme/BlogPostItem";
@@ -16,10 +14,6 @@ export default function BlogListPage(props: Props) {
           <div className="col col--12">
             <div className="blog-grid-container">
               {items.map(({ content: BlogPostContent }) => {
-                const description = BlogPostContent.metadata.description || "";
-                const truncatedDescription =
-                  description.split(" ").slice(0, 15).join(" ") +
-                  (description.split(" ").length > 15 ? "..." : "");
                 return (
                   <article
                     key={BlogPostContent.metadata.permalink}
@@ -29,18 +23,13 @@ export default function BlogListPage(props: Props) {
                       <img
                         className="card__image"
                         src={BlogPostContent.assets.image}
-                        // alt={BlogPostContent.metadata.title}
                       />
                     )}
                     <BlogPostProvider
                       content={BlogPostContent}
                       isBlogPostPage={false}
                     >
-                      <BlogPostItem
-                      // frontMatter={BlogPostContent.frontMatter}
-                      // assets={BlogPostContent.assets}
-                      // metadata={BlogPostContent.metadata}
-                      >
+                      <BlogPostItem>
                         <BlogPostContent />
                       </BlogPostItem>
                     </BlogPostProvider>
