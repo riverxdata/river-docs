@@ -3,7 +3,7 @@
 This project utilizes a smartphone camera and machine learning techniques to analyze and characterize chemical compounds.
 Simply, we capture the concentration on a isolated device to avoid negative impacts from the environment factors by using smartphone camera. Later, we extract the region of interested and use the border background to normalize the ROI color. Then, the raw and normalized ROI are used to train and predict. 
 
-![Illustration](../imgs/smartsensor/paper1.gif)
+![Illustration](./imgs/smartsensor/paper1.gif)
 
 ## Method
 :::tip
@@ -13,7 +13,7 @@ Simply, we capture the concentration on a isolated device to avoid negative impa
 
 The red – green – blue (RGB) colorimetry method for solution concentrations using smartphones often faces challenges from external factors like varying light intensity, camera resolution, and internal color adjustments. To overcome these obstacles, a novel approach was developed to detect the region of interest (ROI). This involved designing a lightbox as a closed system, incorporating an LED light system within a metal frame, as depicted in Fig. 1. The smartphone and cuvette were positioned at a fixed distance of 6 cm and held in specific orientations. A small green square frame, serving as a reference color value, was placed in front of the cuvette. The region inside this frame, known as the ROI, was identified based on the presence of the green border.
 
-![method](../imgs/smartsensor/method.gif)
+![method](./imgs/smartsensor/method.gif)
 
 Figure above provides an overview of our proposed solution, wherein users were prompted to retake the image if the variance of ROI exceeded a predetermined threshold. Despite the apparent closure of the lightbox system for smartphone image capture, the RGB values of the ROI exhibited inconsistency when multiple images of a solution with identical concentrations were taken using the same smartphone. To rectify this inconsistency, we utilized the reference value of the green squared frame to adjust the overall color of the image. Two normalization methods were devised:
 
@@ -175,21 +175,25 @@ smartsensor predict \
 ## RIVER integration
 It is written by RIVER team, so it can run directly on RIVER platform. The platform help to store the data, train data models and predict for the novel data for practical application.
 
+:::tip
+It does not have any parameters, you just need to adjust computing resource then run all
+:::
+
 ### Step 1: Select tool on the tool list and run
-![List](../imgs/smartsensor/analysis_list.png)
+![List](./imgs/smartsensor/analysis_list.png)
 
 
 ### Step 2: Navigate to tool, upload images, or using existing example images
-![Upload](../imgs/smartsensor/upload.png)
+![Upload](./imgs/smartsensor/upload.png)
 
 
 ### Step 3: Process images
-![Process](../imgs/smartsensor/process.png)
+![Process](./imgs/smartsensor/process.png)
 
 
 ### Step 4: Training model
-![Train](../imgs/smartsensor/train.png)
+![Train](./imgs/smartsensor/train.png)
 
 
 ### Step 5: Predict new data
-![Predict](../imgs/smartsensor/predict.png)
+![Predict](./imgs/smartsensor/predict.png)
