@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="rss.xsl"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+    <channel>
+        <title>RiverXData Blog</title>
+        <link>https://riverxdata.github.io/river-docs/blog</link>
+        <description>RiverXData Blog</description>
+        <lastBuildDate>Thu, 08 Jan 2026 00:00:00 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <language>en</language>
+        <item>
+            <title><![CDATA[RIVER- A Web Application to Run Nf-Core]]></title>
+            <link>https://riverxdata.github.io/river-docs/blog/river-platform-and-nextflow</link>
+            <guid>https://riverxdata.github.io/river-docs/blog/river-platform-and-nextflow</guid>
+            <pubDate>Thu, 08 Jan 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[Simply, I just want a web application. This is an all-in-one application similar to Google Drive, but more advanced. It allows me to select files and put them into a workflow obtained directly from GitHub. For example, rnaseq from nf-core. The web application allows me to run and monitor Nextflow jobs. Then, it puts the results back to Google Drive, where I can view the results. It is useful for sharing results with my team or external teams. I can develop pipelines independently. My data can be stored on the cloud for backup. It is a simple and standard procedure for bioinformatics analysis. But I have not found any solution that fits these requirements is EASY, FREE, OPEN-SOURCE]]></description>
+            <content:encoded><![CDATA[<p>Simply, I just want a web application. This is an all-in-one application similar to Google Drive, but more advanced. It allows me to select files and put them into a workflow obtained directly from GitHub. For example, rnaseq from nf-core. The web application allows me to run and monitor Nextflow jobs. Then, it puts the results back to Google Drive, where I can view the results. It is useful for sharing results with my team or external teams. I can develop pipelines independently. My data can be stored on the cloud for backup. It is a simple and standard procedure for bioinformatics analysis. But I have not found any solution that fits these requirements is <code>EASY</code>, <code>FREE</code>, <code>OPEN-SOURCE</code></p>
+<p>If you feel the same, <strong>RIVER</strong> may be your choice.</p>
+<div class="theme-admonition theme-admonition-info admonition_xJq3 alert alert--info"><div class="admonitionHeading_Gvgb"><span class="admonitionIcon_Rf37"><svg viewBox="0 0 14 16"><path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg></span>info</div><div class="admonitionContent_BuS1"><p>This blog post is intended for the general community, show cases only. I'll focus on the big picture rather than diving deep into technical details.</p></div></div>
+<p>To use it, you can follow the below tutorial</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="quick-review">Quick review<a href="https://riverxdata.github.io/river-docs/blog/river-platform-and-nextflow#quick-review" class="hash-link" aria-label="Direct link to Quick review" title="Direct link to Quick review" translate="no">​</a></h2>
+<p>First, you can take a look at how it work first. In breif, it will allows the users to interact with S3 bucket, select inputs from S3 buckets, run and put back results to s3 that
+RIVER platform can visualize. After watching this, you are able to configure the RIVER platform as contributor, add your interested workflows and allow you to run tools</p>
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000"><iframe src="https://www.youtube.com/embed/boabEFNIkNA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe></div>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="get-started">Get started<a href="https://riverxdata.github.io/river-docs/blog/river-platform-and-nextflow#get-started" class="hash-link" aria-label="Direct link to Get started" title="Direct link to Get started" translate="no">​</a></h2>
+<p>Your raw data should be uploaded to the platform. The fastq files are downloaded from the below url, then upload to the platform</p>
+<p>The samplesheet.csv on test profile</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-background-color:hsl(230, 1%, 98%);--prism-color:hsl(230, 8%, 24%)"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="background-color:hsl(230, 1%, 98%);color:hsl(230, 8%, 24%)"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:hsl(230, 8%, 24%)"><span class="token plain">sample,fastq_1,fastq_2</span><br></span><span class="token-line" style="color:hsl(230, 8%, 24%)"><span class="token plain">SAMPLE1_PE,https://raw.githubusercontent.com/nf-core/test-datasets/viralrecon/illumina/amplicon/sample1_R1.fastq.gz,https://raw.githubusercontent.com/nf-core/test-datasets/viralrecon/illumina/amplicon/sample1_R2.fastq.gz</span><br></span><span class="token-line" style="color:hsl(230, 8%, 24%)"><span class="token plain">SAMPLE2_PE,https://raw.githubusercontent.com/nf-core/test-datasets/viralrecon/illumina/amplicon/sample2_R1.fastq.gz,https://raw.githubusercontent.com/nf-core/test-datasets/viralrecon/illumina/amplicon/sample2_R2.fastq.gz</span><br></span></code></pre></div></div>
+<p>The samplesheet.csv on RIVER</p>
+<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-background-color:hsl(230, 1%, 98%);--prism-color:hsl(230, 8%, 24%)"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="background-color:hsl(230, 1%, 98%);color:hsl(230, 8%, 24%)"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:hsl(230, 8%, 24%)"><span class="token plain">sample,fastq_1,fastq_2</span><br></span><span class="token-line" style="color:hsl(230, 8%, 24%)"><span class="token plain">test,s3://genomics/demo/resources/fastq_files/sample1_R1.fastq.gz,s3://genomics/demo/resources/fastq_files/sample1_R2.fastq.gz</span><br></span></code></pre></div></div>
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;max-width:100%;background:#000"><iframe src="https://www.youtube.com/embed/Fujhi6ZnHQQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" style="position:absolute;top:0;left:0;width:100%;height:100%"></iframe></div>]]></content:encoded>
+            <author>nttg8100@gmail.com (Thanh-Giang Tan Nguyen)</author>
+            <category>s3</category>
+            <category>data-analysis</category>
+            <category>slurm</category>
+            <category>hpc</category>
+            <category>web-platform</category>
+        </item>
+    </channel>
+</rss>
