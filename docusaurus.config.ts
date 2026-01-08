@@ -41,7 +41,20 @@ const config: Config = {
           remarkPlugins: [remarkMath],
           rehypePlugins: [rehypeKatex],
         },
-        blog: false,
+        blog: {
+          showReadingTime: true,
+          feedOptions: {
+            type: ['rss', 'atom'],
+            xslt: true,
+          },
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
+          blogTitle: 'RiverXData Blog',
+          blogDescription: 'Insights and updates from the RiverXData team',
+          postsPerPage: 'ALL',
+          blogSidebarTitle: 'All posts',
+          blogSidebarCount: 'ALL',
+        },
         theme: {
           customCss: "./src/css/custom.css",
         },
@@ -91,6 +104,11 @@ const config: Config = {
           label: "Documentation",
         },
         {
+          to: "/blog",
+          label: "Blog",
+          position: "left",
+        },
+        {
           href: "https://github.com/riverxdata/river",
           label: "GitHub",
           position: "right",
@@ -112,6 +130,10 @@ const config: Config = {
         {
           title: "Community",
           items: [
+            {
+              label: "Blog",
+              to: "/blog",
+            },
             {
               label: "Facebook",
               href: "https://www.facebook.com/groups/1134438583997171",
@@ -161,7 +183,7 @@ const config: Config = {
       {
         hashed: true,
         indexDocs: true,
-        indexBlog: false,
+        indexBlog: true,
         indexPages: true,
       },
     ],
