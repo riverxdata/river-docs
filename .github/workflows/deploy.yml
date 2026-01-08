@@ -31,7 +31,7 @@ jobs:
             - name: Build Docusaurus
               run: yarn build
             - name: Set username for git
-              run: git config --global user.name "nttg"
+              run: git config --global user.name "nttg8100"
 
             - name: Deploy via SSH
               env:
