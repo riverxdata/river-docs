@@ -67,7 +67,7 @@
 }
 
 .blog-grid-container .title_f1Hy {
-  font-size: 1.5rem !important;
+  font-size: 1.1rem !important;
 }
 
 .blog-grid-container .markdown p {
@@ -152,8 +152,4 @@
   .announcementBarContent_xLdY::before {
     font-size: 1.2rem;
   }
-}
-
-.katex-html {
-  display: none !important;
 }
