@@ -21,3 +21,6 @@ yarn-error.log*
 # pixi environments
 .pixi/*
 !.pixi/config.toml
+
+# Temporary files in blog posts
+blog/**/temp/

@@ -54,6 +54,10 @@ const config: Config = {
           postsPerPage: 'ALL',
           blogSidebarTitle: 'All posts',
           blogSidebarCount: 'ALL',
+          exclude: [
+            '**/temp/**',
+            '**/.pixi/**',
+          ],
         },
         theme: {
           customCss: "./src/css/custom.css",
@@ -185,6 +189,10 @@ const config: Config = {
         indexDocs: true,
         indexBlog: true,
         indexPages: true,
+        ignoreFiles: [
+          /temp\//,
+          /\.pixi\//,
+        ],
       },
     ],
   ],
