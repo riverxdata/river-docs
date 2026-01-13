@@ -1,1 +1,0 @@
-"use strict";(globalThis.webpackChunkmy_website=globalThis.webpackChunkmy_website||[]).push([[7472],{5513(e){e.exports=JSON.parse('{"title":"All posts","items":[{"title":"RIVER- A Web Application to Run Nf-Core","permalink":"/river-docs/blog/river-platform-and-nextflow","unlisted":false,"date":"2026-01-08T00:00:00.000Z"}]}')}}]);
