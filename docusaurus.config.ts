@@ -153,7 +153,7 @@ const config: Config = {
           items: [
             {
               label: "About RiverXData",
-              href: "https://riverxdata.github.ios",
+              href: "https://riverxdata.github.io",
             },
           ],
         },
