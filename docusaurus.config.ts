@@ -177,7 +177,8 @@ const config: Config = {
         "shell-session",
         "sql",
         "typescript",
-        "yaml"
+        "yaml",
+        "diff",
       ],
     },
   } satisfies Preset.ThemeConfig,

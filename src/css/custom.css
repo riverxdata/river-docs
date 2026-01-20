@@ -153,3 +153,24 @@
     font-size: 1.2rem;
   }
 }
+
+
+.token.deleted {
+  text-decoration: none !important;
+}
+.token.inserted {
+  text-decoration: none !important;
+}
+
+
+/* Remove block display that causes vertical gaps */
+.token.inserted,
+.token.inserted-sign,
+.token.deleted,
+.token.deleted-sign {
+  display: inline;
+  width: auto;
+  margin: 0;
+  /* Remove text-decoration for deletions (no strikethrough) */
+  text-decoration: none !important;
+}
