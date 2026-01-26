@@ -71,6 +71,10 @@ const config: Config = {
   ],
 
   themeConfig: {
+    tableOfContents: {
+      minHeadingLevel: 2,
+      maxHeadingLevel: 5,
+    },
     announcementBar: {
       id: "support_us",
       content: "Comming soon: Support us on GitHub Sponsors! ❤️",
