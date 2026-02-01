@@ -128,6 +128,7 @@ configuration can help ? Linking with previous section on using pipe after downl
 <li class="">We do not need to modify the existing module</li>
 </ul></div></div>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="genomics-england-case-studies">Genomics England case studies<a href="https://riverxdata.github.io/river-docs/blog/bioinformatics-computing-resource-optimization-part2#genomics-england-case-studies" class="hash-link" aria-label="Direct link to Genomics England case studies" title="Direct link to Genomics England case studies" translate="no">​</a></h2>
+<p>Reference: <strong><a href="https://aws.amazon.com/blogs/hpc/optimize-nextflow-workflows-on-aws-batch-with-mountpoint-for-amazon-s3/" target="_blank" rel="noopener noreferrer" class="">https://aws.amazon.com/blogs/hpc/optimize-nextflow-workflows-on-aws-batch-with-mountpoint-for-amazon-s3/</a></strong>.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="issues">Issues<a href="https://riverxdata.github.io/river-docs/blog/bioinformatics-computing-resource-optimization-part2#issues" class="hash-link" aria-label="Direct link to Issues" title="Direct link to Issues" translate="no">​</a></h3>
 <p>Now we can consider on what can be the issue that we can face with in the real problem. And how can we apply this
 Here, I found that the blog that how Genomic England can solve the similar issue when they want to use VEP to annotate their variants.
