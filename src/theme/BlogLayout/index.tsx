@@ -13,7 +13,7 @@ export default function BlogLayout(props: Props): ReactNode {
     <Layout {...layoutProps}>
       <div
         className="paper"
-        style={{ width: "60%", margin: "auto", marginTop: 50 }}
+        style={{ width: "90%", margin: "auto", marginTop: 50 }}
       >
         <div className="row" style={{ width: "100%" }}>
           {hasSidebar && <BlogSidebar sidebar={sidebar} />}
