@@ -62,10 +62,6 @@ const config: Config = {
         theme: {
           customCss: "./src/css/custom.css",
         },
-        gtag: {
-          trackingID: "G-0BBYTVWQV2",
-          anonymizeIP: true,
-        },
       } satisfies Preset.Options,
     ],
   ],
@@ -198,6 +194,13 @@ const config: Config = {
           /temp\//,
           /\.pixi\//,
         ],
+      },
+    ],
+    [
+      "@docusaurus/plugin-google-gtag",
+      {
+        trackingID: "G-0BBYTVWQV2",
+        anonymizeIP: true,
       },
     ],
   ],
