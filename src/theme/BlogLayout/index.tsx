@@ -13,19 +13,19 @@ export default function BlogLayout(props: Props): ReactNode {
     <Layout {...layoutProps}>
       <div
         className="paper"
-        style={{ width: "75%", margin: "auto", marginTop: 50 }}
+        style={{ width: "95%", margin: "auto", marginTop: 50 }}
       >
         <div className="row" style={{ width: "100%" }}>
-          {hasSidebar && <BlogSidebar sidebar={sidebar} />}
+          {hasSidebar && <BlogSidebar  sidebar={sidebar} />}
           <main
             className={clsx("col", {
-              "col--7": hasSidebar,
+              "col--6": hasSidebar,
               "col--9 col--offset-1": !hasSidebar,
             })}
           >
             {children}
           </main>
-          {toc && <div className="col col--2">{toc}</div>}
+          {toc && <div className="col col--3">{toc}</div>}
         </div>
       </div>
     </Layout>

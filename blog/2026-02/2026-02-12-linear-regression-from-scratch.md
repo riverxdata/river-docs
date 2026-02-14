@@ -4,6 +4,7 @@ title: "Machine Learning in Bioinformatics Part 2: Building Linear Regression fr
 authors: [river]
 tags: [machine-learning, linear-regression, python, bioinformatics, data-science]
 image: ./imgs/intro.png
+draft: true
 ---
 
 Linear regression is the foundation of machine learning. While libraries like scikit-learn make it trivial to fit a model with a single line of code, understanding *how* linear regression works—the math behind it and how to implement it from scratch—is essential for any data scientist. This post builds linear regression completely from first principles, exploring the mathematics, implementing it in pure Python, and applying it to real bioinformatics data.

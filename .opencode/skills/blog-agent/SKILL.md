@@ -100,13 +100,59 @@ This section contains the teaser that appears before the "read more" link.
 
 **Important:** Include `<!-- truncate -->` to define where the blog preview ends.
 
-### 2. Main Sections
-- Use clear, descriptive headings (H2: `##`, H3: `###`)
+### 2. Heading Numbering Convention
+All main sections and subsections should use numbered prefixes with hierarchical dot notation:
+
+**Level 2 headings (##):** Use format `1`, `2`, `3`, etc.
+```markdown
+## 1. First Main Section
+## 2. Second Main Section
+## 3. Third Main Section
+```
+
+**Level 3 subheadings (###):** Use format `1.1`, `1.2`, `1.3` (nested under the parent section number)
+```markdown
+## 1. Main Section
+### 1.1. First Subsection
+### 1.2. Second Subsection
+### 1.3. Third Subsection
+
+## 2. Another Main Section
+### 2.1. Another Subsection
+```
+
+**Level 4 subheadings (####):** Use format `1.1.1`, `1.1.2`, etc. (further nested)
+```markdown
+## 1. Main Section
+### 1.1. Subsection
+#### 1.1.1. Sub-subsection
+#### 1.1.2. Another Sub-subsection
+```
+
+**Example structure:**
+```markdown
+## 1. Getting Started
+### 1.1. Prerequisites
+### 1.2. Installation
+
+## 2. Configuration
+### 2.1. Basic Setup
+### 2.2. Advanced Options
+#### 2.2.1. Option A
+#### 2.2.2. Option B
+
+## 3. Usage Examples
+### 3.1. Simple Example
+### 3.2. Complex Example
+```
+
+### 3. Main Sections
+- Use clear, descriptive headings with numbered prefixes (see Heading Numbering Convention above)
 - Break content into logical sections
 - Include code examples with proper syntax highlighting
 - Add tables, diagrams, or lists for complex information
 
-### 3. Code Blocks
+### 4. Code Blocks
 Use language-specific syntax highlighting:
 
 ```python
@@ -364,19 +410,27 @@ Your opening hook explaining the problem.
 
 <!-- truncate -->
 
-## Introduction Section
+## 1. Introduction Section
 
 More detailed introduction here.
 
-## Main Section 1
+### 1.1. First Subsection
+
+Content and details here.
+
+### 1.2. Second Subsection
+
+More content with code examples.
+
+## 2. Main Section
 
 Content with code examples.
 
-## Main Section 2
+### 2.1. Subsection
 
-More content...
+Details here.
 
-## Summary
+## 3. Summary
 
 Key takeaways.
 ```
