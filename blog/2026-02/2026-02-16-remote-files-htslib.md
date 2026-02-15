@@ -104,6 +104,124 @@ The key line is `S3=yes` indicating S3 support is enabled.
 - **Reproducible environments**: `pixi.lock` ensures the same versions across machines
 - **No system-wide installation**: Keep tools isolated in your project environment
 
+### 1.5 Supported URL Schemes and Random Access Mechanism
+
+HTSlib supports a wide range of protocols. Check your installation with:
+
+```bash
+# View all supported protocols
+pixi run samtools --version 2>&1 | grep -A 20 "HTSlib URL"
+```
+
+You should see output like:
+
+```
+HTSlib URL scheme handlers present:
+    built-in:	 file, preload, data
+    Google Cloud Storage:	 gs+http, gs+https, gs
+    libcurl:	 gophers, smtp, wss, smb, rtsp, tftp, pop3, smbs, imaps, pop3s, ws, ftps, ftp, gopher, imap, http, https, sftp, smtps, scp, dict, mqtt, telnet
+    Amazon S3:	 s3+https, s3, s3+http
+    crypt4gh-needed:	 crypt4gh
+    mem:	 mem
+```
+
+#### How Random Access Works Behind the Scenes
+
+For **indexed remote files**, HTSlib implements efficient random access using HTTP byte-range requests. Here's how each protocol works:
+
+#### S3 (Amazon S3 and compatible services)
+
+```
+User request: bcftools view s3://bucket/variants.vcf.gz chr1:1000-2000
+
+Behind the scenes:
+1. HTSlib reads .vcf.gz.tbi index (if exists locally or remote)
+2. Index tells HTSlib: "chr1:1000-2000 is at byte offset 5000-15000 in compressed file"
+3. HTSlib sends HTTP request: Range: bytes=5000-15000
+4. S3 returns ONLY those 10KB bytes (not the full 1GB file!)
+5. HTSlib decompresses those bytes → returns matching variants
+```
+
+**Key advantage**: Uses AWS SDK for signed requests, works seamlessly with IAM roles.
+
+#### HTTPS/HTTP
+
+```
+User request: bcftools view https://ftp.ncbi.nlm.nih.gov/path/variants.vcf.gz chr1:1000-2000
+
+Behind the scenes:
+1. HTSlib reads .vcf.gz.tbi index from same remote location
+2. Index lookup: byte range for chr1:1000-2000
+3. HTSlib sends HTTP GET with Range header: Range: bytes=5000-15000
+4. Server (if Range-Request capable) returns partial content
+5. HTSlib decompresses and returns variants
+
+Data transferred: 
+  - Index file: ~100-200KB (one-time, cached)
+  - Per-query: ~100KB-1MB (only requested bytes)
+  - NOT 1GB+
+```
+
+**Requirement**: Server must support HTTP Range Requests (most modern servers do).
+
+#### FTP
+
+```
+User request: bcftools view ftp://ftp.ncbi.nlm.nih.gov/path/variants.vcf.gz chr1:1000-2000
+
+Behind the scenes:
+1. HTSlib opens FTP connection
+2. Uses FTP REST command to seek to byte offset
+3. Reads only the required bytes via FTP stream
+4. Closes/reuses connection for subsequent queries
+
+Data transferred:
+  - Per-query: ~100KB-1MB (indexed access)
+  - Slower than HTTPS due to FTP protocol overhead
+```
+
+**Limitation**: Slower than HTTPS, but still supports efficient region queries if index exists.
+
+#### GCS (Google Cloud Storage)
+
+```
+Works similarly to S3:
+- Uses gs:// protocol prefix
+- Supports signed URLs for authentication
+- Efficient byte-range requests like S3
+- Requires Google Cloud SDK credentials
+```
+
+#### What Happens WITHOUT an Index?
+
+```
+User request: bcftools view https://example.com/variants.vcf.gz chr1:1000-2000
+(No .vcf.gz.tbi file found)
+
+Behind the scenes:
+1. HTSlib cannot seek directly to the region
+2. MUST download and decompress ENTIRE file from start
+3. Scans through entire file looking for chr1:1000-2000
+4. Returns matching variants
+
+Data transferred: 1GB+ (entire file!)
+Time: minutes or fails on timeout
+```
+
+**This is why indexes are critical for remote files!**
+
+#### Bandwidth Comparison
+
+For a 1GB VCF file, querying chr1:1-100000:
+
+| Scenario | Bytes Transferred | Time |
+|----------|------------------|------|
+| Indexed remote (HTTPS) | ~200KB + 500KB | 1-2 seconds |
+| Indexed remote (S3) | ~200KB + 500KB | <1 second |
+| Indexed remote (FTP) | ~200KB + 500KB | 3-5 seconds |
+| Unindexed remote | 1000MB+ | 5-30 minutes |
+| Local indexed file | ~200KB + 500KB | <0.5 seconds |
+
 ## 2. S3 Remote File Access
 
 AWS S3 is a common repository for genomic datasets. HTSlib supports S3 through the `s3://` protocol.
