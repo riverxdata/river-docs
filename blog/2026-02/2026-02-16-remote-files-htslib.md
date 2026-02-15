@@ -1,12 +1,12 @@
 ---
 slug: remote-files-htslib-bcftools-samtools
-title: Working with Remote Files using HTSlib-based Tools
+title: "Working with Remote Files using bcftools and samtools (HTSlib)"
 authors: [river]
 tags: [bioinformatics, htslib, bcftools, samtools, s3, remote-files, cloud, genomics]
 image: ./imgs/intro.png
 ---
 
-# Working with Remote Files using HTSlib-based Tools
+# Working with Remote Files using bcftools and samtools (HTSlib)
 
 HTSlib-based tools like `bcftools` and `samtools` provide powerful capabilities for working with genomic data stored on remote servers. Whether your data is in AWS S3, accessible via FTP, or hosted on HTTPS endpoints, these tools allow you to efficiently query and subset remote files without downloading entire datasets. This guide covers authentication, remote file access patterns, and practical workflows.
 
@@ -38,6 +38,71 @@ Remote file access requires indexed files for efficient region-based queries:
 - **BCF files**: Must have `.bcf.csi` index
 
 Region queries on indexed remote files use byte-range requests, downloading only the necessary data chunks.
+
+### 1.4 Setting Up bcftools and samtools with Pixi
+
+The easiest way to install bcftools and samtools with full remote file support is using Pixi with the `conda-forge` and `bioconda` channels. These channels include pre-compiled binaries with S3, FTP, and HTTPS support enabled in HTSlib.
+
+#### Installation Steps
+
+Create a new directory for your project and initialize a Pixi environment:
+
+```bash
+# Create project directory
+mkdir -p ~/htslib-project && cd ~/htslib-project
+
+# Initialize Pixi with conda-forge and bioconda channels
+pixi init --channel conda-forge --channel bioconda .
+
+# Add bcftools and samtools
+pixi add bcftools samtools
+```
+
+This creates a `pixi.toml` file:
+
+```toml
+[workspace]
+channels = ["conda-forge", "bioconda"]
+name = "htslib-project"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[dependencies]
+bcftools = ">=1.23,<2"
+samtools = ">=1.23,<2"
+```
+
+### Verify Installation
+
+```bash
+# Run bcftools version
+pixi run bcftools --version
+
+# Run samtools version
+pixi run samtools --version
+```
+
+Both tools will report HTSlib features including S3, GCS, and libcurl support:
+
+```
+bcftools 1.23
+Using htslib 1.23
+...
+
+Samtools 1.23
+...
+HTSlib compilation details:
+    Features:       build=configure libcurl=yes S3=yes GCS=yes ...
+```
+
+The key line is `S3=yes` indicating S3 support is enabled.
+
+#### Why Pixi for Remote File Access?
+
+- **Pre-compiled with remote support**: Bioconda packages include HTSlib compiled with libcurl, S3, and GCS support
+- **Easy dependency management**: All required libraries included automatically
+- **Reproducible environments**: `pixi.lock` ensures the same versions across machines
+- **No system-wide installation**: Keep tools isolated in your project environment
 
 ## 2. S3 Remote File Access
 
@@ -121,16 +186,32 @@ bcftools annotate local_subset.vcf.gz -a annotation.vcf.gz -c ID
 
 ### 2.5 Working with 1000 Genomes Data
 
-The 1000 Genomes Project provides public data in S3. Example queries:
+The 1000 Genomes Project provides public data in S3 with no-sign-request access, making it perfect for testing remote file queries.
+
+**Discover available files:**
 
 ```bash
-# Query 1000 Genomes variants (public S3 bucket)
+# List available data (requires AWS CLI)
+aws s3 ls s3://1000genomes/phase3/data/ --no-sign-request | head -20
+
+# List specific file types
+aws s3 ls s3://1000genomes/phase1/analysis_results/integrated_call_sets/ --no-sign-request | grep chr1
+```
+
+**Query 1000 Genomes data with bcftools:**
+
+```bash
+# Query variants from 1000 Genomes Phase 1
+# Note: Some files are very large; start with smaller validation files
 bcftools view \
-  s3://1000genomes/phase3/release/20130502/ALL.chr1.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz \
-  chr1:1-1000000 \
+  s3://1000genomes/phase1/analysis_results/experimental_validation/snps/ALL.chr20.exome_consensus_validation_454.20120118.snp.exome.sites.fixed.vcf.gz \
   | bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\n' \
   | head -20
 ```
+
+**Testing with real S3 data:**
+
+Before querying large production files, practice with the test workflow from section 5.4. This ensures your bcftools and samtools are correctly configured for remote access. Then gradually scale to real files.
 
 ## 3. FTP Remote File Access
 
@@ -353,6 +434,79 @@ time bcftools view s3://my-bucket/variants.vcf.gz chr1:1-1000000 > /dev/null
 # HTSlib automatically uses index if available, so explicitly avoid it only if needed
 ```
 
+### 5.4 Testing Remote File Access with Local Files
+
+Before working with remote files, it's helpful to test bcftools and samtools locally. Use this workflow to verify your installation and practice region queries.
+
+**Create test VCF file:**
+
+```bash
+# Create test directory
+mkdir -p ~/genomics-test && cd ~/genomics-test
+
+# Create test VCF
+cat > test.vcf << 'EOF'
+##fileformat=VCFv4.2
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total read depth">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	sample1	sample2
+chr1	10000	.	A	G	60	.	DP=100	GT	0/1	1/1
+chr1	20000	.	C	T	50	.	DP=80	GT	0/0	0/1
+chr1	30000	.	G	A	70	.	DP=120	GT	1/1	0/1
+chr1	100000	.	T	C	55	.	DP=90	GT	0/1	0/0
+EOF
+
+# Compress and index (requires bgzip and tabix from pixi)
+pixi run bgzip -f test.vcf
+pixi run tabix -p vcf test.vcf.gz
+```
+
+**Test bcftools region queries:**
+
+```bash
+# Query specific region
+pixi run bcftools view test.vcf.gz chr1:1-50000
+
+# Extract specific samples
+pixi run bcftools view -s sample1 test.vcf.gz chr1:10000-50000
+
+# Count variants in region
+pixi run bcftools view -H test.vcf.gz chr1:1-100000 | wc -l
+```
+
+**Create and test BAM file:**
+
+```bash
+# Create test SAM file
+cat > test.sam << 'EOF'
+@HD	VN:1.0	SO:coordinate
+@SQ	SN:chr1	LN:1000000
+read1	0	chr1	100	60	10M	*	0	0	ACGTACGTAC	IIIIIIIIII
+read2	0	chr1	120	60	10M	*	0	0	TGCATGCATG	IIIIIIIIII
+read3	0	chr1	50000	60	10M	*	0	0	AAAAAAAAAA	IIIIIIIIII
+read4	0	chr1	100000	60	10M	*	0	0	TTTTTTTTTT	IIIIIIIIII
+EOF
+
+# Convert to BAM and index
+pixi run samtools view -b test.sam -o test.bam
+pixi run samtools index test.bam
+```
+
+**Test samtools region queries:**
+
+```bash
+# View reads in region
+pixi run samtools view test.bam chr1:1-60000
+
+# Count reads in region
+pixi run samtools view -c test.bam chr1:1-60000
+
+# Extract region to new file
+pixi run samtools view -b test.bam chr1:50000-100000 -o region.bam
+```
+
+Once comfortable with local files, the same commands work seamlessly with remote S3, FTP, or HTTPS URLs—just replace local filenames with remote URLs.
+
 ## 6. Common Workflows and Recipes
 
 ### 6.1 Extract Variants for Specific Genes
@@ -524,22 +678,41 @@ export CURL_VERBOSE=1
 
 ### 8.3 Quick Reference Workflow
 
+**Setup (one time):**
+
 ```bash
-# 1. Set up authentication
+# Create project directory
+mkdir -p ~/genomics-work && cd ~/genomics-work
+
+# Initialize Pixi with conda-forge and bioconda
+pixi init --channel conda-forge --channel bioconda .
+
+# Add tools
+pixi add bcftools samtools
+
+# Verify installation
+pixi run bcftools --version
+pixi run samtools --version
+```
+
+**Using remote files:**
+
+```bash
+# 1. Set up authentication (if using private S3)
 export AWS_ACCESS_KEY_ID="..."
 export AWS_SECRET_ACCESS_KEY="..."
 export AWS_DEFAULT_REGION="us-east-1"
 
 # 2. Query remote indexed file
-bcftools view s3://my-bucket/variants.vcf.gz chr1:1-1000000
+pixi run bcftools view s3://my-bucket/variants.vcf.gz chr1:1-1000000
 
 # 3. Process locally if needed
-bcftools view s3://my-bucket/variants.vcf.gz chr1:1-1000000 \
+pixi run bcftools view s3://my-bucket/variants.vcf.gz chr1:1-1000000 \
   -O v -o chr1_subset.vcf
 
 # 4. Create local index for repeated use
-bgzip -f chr1_subset.vcf
-tabix -p vcf chr1_subset.vcf.gz
+pixi run bgzip -f chr1_subset.vcf
+pixi run tabix -p vcf chr1_subset.vcf.gz
 ```
 
 ### 8.4 Next Steps
