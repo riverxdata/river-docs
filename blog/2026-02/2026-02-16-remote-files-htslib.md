@@ -12,34 +12,129 @@ HTSlib-based tools like `bcftools` and `samtools` provide powerful capabilities 
 
 <!-- truncate -->
 
-## 1. HTSlib Remote File Support Overview
+## 1. How HTSlib Handles Remote Files with Random Access
 
-HTSlib is a C library that powers many genomic tools. Tools built on HTSlib—including `bcftools`, `samtools`, `tabix`, and others—inherit native support for multiple remote file protocols.
+HTSlib is a C library that powers many genomic tools. Tools built on HTSlib—including `bcftools`, `samtools`, `tabix`, and others—inherit native support for **remote file access via random access queries**. This section explains how HTSlib works with remote files and which protocols are supported.
 
-### 1.1 Supported Protocols
+### 1.1 Random Access Mechanism: The Foundation
 
-- **S3**: Amazon S3 and S3-compatible services (MinIO, DigitalOcean Spaces, etc.)
-- **FTP**: File Transfer Protocol for standard FTP servers
-- **HTTPS**: Secure HTTP for cloud-hosted files with token-based authentication
-- **HTTP**: Standard HTTP access (less common for sensitive genomic data)
+HTSlib enables efficient remote file access through a **byte-range request mechanism**. Instead of downloading entire files, it uses file indexes to determine exact byte positions and requests only those bytes from the remote server.
 
-### 1.2 Key Advantages of Remote Access
+**How it works:**
+
+```
+User Request:
+  bcftools view s3://bucket/variants.vcf.gz chr1:1000-2000
+
+HTSlib Process:
+1. Reads index file (.vcf.gz.tbi) to find byte ranges
+2. Index lookup: "chr1:1000-2000 is at bytes 5000-15000"
+3. Sends byte-range request to remote server
+4. Remote server returns ONLY requested bytes (10KB, not 1GB!)
+5. HTSlib decompresses partial data
+6. Returns matching variants to user
+
+Result: 10KB downloaded instead of 1GB
+Time: 1-5 seconds instead of 5-30 minutes
+```
+
+**Critical requirement: Indexed files** (`.tbi`, `.bai`, `.csi`)
+- Without index: Must download entire file from start (fails on large files)
+- With index: Downloads only necessary bytes (efficient and fast)
+
+### 1.2 All Supported URL Schemes
+
+HTSlib supports a comprehensive list of protocols via `libcurl`. Check your installation:
+
+```bash
+# View all supported protocols
+pixi run samtools --version 2>&1 | grep -A 20 "HTSlib URL"
+```
+
+**Complete output example:**
+
+```
+HTSlib URL scheme handlers present:
+    built-in:        file, preload, data
+    Google Cloud:    gs+http, gs+https, gs
+    libcurl:         gophers, smtp, wss, smb, rtsp, tftp, pop3, smbs, imaps, pop3s, ws, ftps, ftp, gopher, imap, http, https, sftp, smtps, scp, dict, mqtt, telnet
+    Amazon S3:       s3+https, s3, s3+http
+    crypt4gh:        crypt4gh
+    mem:             mem
+```
+
+**Protocol categories:**
+
+| Category | Protocols | Typical Use |
+|----------|-----------|------------|
+| **Built-in** | file, preload, data | Local files, pipes |
+| **Cloud Storage** | s3://, gs:// | AWS, Google Cloud |
+| **HTTP-based** | http://, https://, ftps:// | Web servers, FTP over SSL |
+| **Other** | ftp://, sftp://, scp://, smb:// | Traditional file servers |
+| **Specialized** | mqtt, dict, imap, etc | Not typical for genomics |
+
+**Note on protocol coverage:** This blog focuses on the most common protocols for bioinformatics: **S3, HTTPS, FTP, and GCS**. Many other protocols are available but less commonly used for genomic data.
+
+### 1.3 Typical Bioinformatics Protocols (Covered in This Blog)
+
+The following protocols are widely used for storing and accessing genomic data:
+
+#### S3 (Amazon S3 and compatible)
+- **URL scheme**: `s3://bucket-name/path/file.vcf.gz`
+- **Use case**: Cloud-based genomic repositories, AWS-hosted data
+- **Random access**: Via byte-range requests, AWS SDK for auth
+- **Speed**: Fastest (typically <1 second for indexed queries)
+- **See section**: 2 - S3 Remote File Access
+
+#### HTTPS (Web servers)
+- **URL scheme**: `https://server.com/path/file.vcf.gz`
+- **Use case**: Public databases (NCBI, Ensembl), institutional servers
+- **Random access**: Via HTTP Range header (206 Partial Content)
+- **Speed**: Fast (1-2 seconds for indexed queries)
+- **See section**: 4 - HTTPS Remote File Access
+
+#### FTP (File Transfer Protocol)
+- **URL scheme**: `ftp://server.com/path/file.vcf.gz`
+- **Use case**: Legacy databases, some public repositories
+- **Random access**: Via FTP REST command for seeking
+- **Speed**: Slower (3-5 seconds for indexed queries)
+- **See section**: 3 - FTP Remote File Access
+
+#### GCS (Google Cloud Storage)
+- **URL scheme**: `gs://bucket-name/path/file.vcf.gz`
+- **Use case**: Google Cloud-hosted genomic data
+- **Random access**: Similar to S3 (byte-range requests)
+- **Speed**: Fast (typically <1 second for indexed queries)
+- **Note**: Requires Google Cloud SDK credentials
+
+### 1.4 Key Advantages of Remote Access
 
 - **Avoid large downloads**: Query specific regions without transferring entire files
 - **Cost efficiency**: Pay only for data you access, not storage
 - **Scalability**: Work with datasets larger than local disk space
 - **Collaboration**: Reference shared datasets directly without copying
+- **Real-time access**: Always work with latest version of data
 
-### 1.3 Performance Considerations
+### 1.5 Performance Considerations: Why Indexes Matter
 
 Remote file access requires indexed files for efficient region-based queries:
 - **VCF files**: Must have `.vcf.gz.tbi` index
 - **BAM files**: Must have `.bam.bai` index
 - **BCF files**: Must have `.bcf.csi` index
 
-Region queries on indexed remote files use byte-range requests, downloading only the necessary data chunks.
+**Bandwidth comparison for 1GB VCF file querying chr1:1-100000:**
 
-### 1.4 Setting Up bcftools and samtools with Pixi
+| Scenario | Bytes Transferred | Time | Method |
+|----------|------------------|------|--------|
+| **Indexed S3** | ~700KB | <1 second | Byte-range request |
+| **Indexed HTTPS** | ~700KB | 1-2 seconds | HTTP Range header |
+| **Indexed FTP** | ~700KB | 3-5 seconds | FTP REST seek |
+| **Unindexed remote** | 1000MB+ | 5-30 minutes | Sequential download |
+| **Local indexed file** | ~700KB | <0.5 seconds | Direct file seek |
+
+**Critical insight**: Indexed remote access downloads only 0.07% of file size!
+
+### 1.6 Setting Up bcftools and samtools with Pixi
 
 The easiest way to install bcftools and samtools with full remote file support is using Pixi with the `conda-forge` and `bioconda` channels. These channels include pre-compiled binaries with S3, FTP, and HTTPS support enabled in HTSlib.
 
@@ -72,7 +167,7 @@ bcftools = ">=1.23,<2"
 samtools = ">=1.23,<2"
 ```
 
-### Verify Installation
+#### Verify Installation
 
 ```bash
 # Run bcftools version
@@ -104,138 +199,24 @@ The key line is `S3=yes` indicating S3 support is enabled.
 - **Reproducible environments**: `pixi.lock` ensures the same versions across machines
 - **No system-wide installation**: Keep tools isolated in your project environment
 
-### 1.5 Supported URL Schemes and Random Access Mechanism
+### 1.7 Protocol Verification: HTTP Range Requests
 
-HTSlib supports a wide range of protocols. Check your installation with:
-
-```bash
-# View all supported protocols
-pixi run samtools --version 2>&1 | grep -A 20 "HTSlib URL"
-```
-
-You should see output like:
-
-```
-HTSlib URL scheme handlers present:
-    built-in:	 file, preload, data
-    Google Cloud Storage:	 gs+http, gs+https, gs
-    libcurl:	 gophers, smtp, wss, smb, rtsp, tftp, pop3, smbs, imaps, pop3s, ws, ftps, ftp, gopher, imap, http, https, sftp, smtps, scp, dict, mqtt, telnet
-    Amazon S3:	 s3+https, s3, s3+http
-    crypt4gh-needed:	 crypt4gh
-    mem:	 mem
-```
-
-#### How Random Access Works Behind the Scenes
-
-For **indexed remote files**, HTSlib implements efficient random access using HTTP byte-range requests. Here's how each protocol works:
-
-#### S3 (Amazon S3 and compatible services)
-
-```
-User request: bcftools view s3://bucket/variants.vcf.gz chr1:1000-2000
-
-Behind the scenes:
-1. HTSlib reads .vcf.gz.tbi index (if exists locally or remote)
-2. Index tells HTSlib: "chr1:1000-2000 is at byte offset 5000-15000 in compressed file"
-3. HTSlib sends HTTP request: Range: bytes=5000-15000
-4. S3 returns ONLY those 10KB bytes (not the full 1GB file!)
-5. HTSlib decompresses those bytes → returns matching variants
-```
-
-**Key advantage**: Uses AWS SDK for signed requests, works seamlessly with IAM roles.
-
-#### HTTPS/HTTP
-
-```
-User request: bcftools view https://ftp.ncbi.nlm.nih.gov/path/variants.vcf.gz chr1:1000-2000
-
-Behind the scenes:
-1. HTSlib reads .vcf.gz.tbi index from same remote location
-2. Index lookup: byte range for chr1:1000-2000
-3. HTSlib sends HTTP GET with Range header: Range: bytes=5000-15000
-4. Server (if Range-Request capable) returns partial content
-5. HTSlib decompresses and returns variants
-
-Data transferred: 
-  - Index file: ~100-200KB (one-time, cached)
-  - Per-query: ~100KB-1MB (only requested bytes)
-  - NOT 1GB+
-```
-
-**Requirement**: Server must support HTTP Range Requests (most modern servers do).
-
-**Verify Range Request Support:**
+For HTTPS/HTTP remote access to work efficiently, the server must support HTTP Range Requests. Verify this before relying on remote queries:
 
 ```bash
-# Check if a remote server supports Range Requests
+# Test if server supports Range Requests
 curl -I -H "Range: bytes=0-500" https://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF/00-common_all_papu.vcf.gz
 
-# Look for HTTP 206 in response:
-# HTTP/1.1 206 Partial Content
-# Accept-Ranges: bytes
-# Content-Length: 501
-
-# If you see "206 Partial Content" → Range Requests work! ✓
-# If you see "200 OK" → Server ignores Range header (slower but still works)
+# Expected response: HTTP/1.1 206 Partial Content
+# This means byte-range requests work! ✓
 ```
 
-#### FTP
-
+Response headers will show:
 ```
-User request: bcftools view ftp://ftp.ncbi.nlm.nih.gov/path/variants.vcf.gz chr1:1000-2000
-
-Behind the scenes:
-1. HTSlib opens FTP connection
-2. Uses FTP REST command to seek to byte offset
-3. Reads only the required bytes via FTP stream
-4. Closes/reuses connection for subsequent queries
-
-Data transferred:
-  - Per-query: ~100KB-1MB (indexed access)
-  - Slower than HTTPS due to FTP protocol overhead
+HTTP/1.1 206 Partial Content      ← supports Range requests
+Accept-Ranges: bytes              ← confirms support
+Content-Length: 501               ← returns partial content
 ```
-
-**Limitation**: Slower than HTTPS, but still supports efficient region queries if index exists.
-
-#### GCS (Google Cloud Storage)
-
-```
-Works similarly to S3:
-- Uses gs:// protocol prefix
-- Supports signed URLs for authentication
-- Efficient byte-range requests like S3
-- Requires Google Cloud SDK credentials
-```
-
-#### What Happens WITHOUT an Index?
-
-```
-User request: bcftools view https://example.com/variants.vcf.gz chr1:1000-2000
-(No .vcf.gz.tbi file found)
-
-Behind the scenes:
-1. HTSlib cannot seek directly to the region
-2. MUST download and decompress ENTIRE file from start
-3. Scans through entire file looking for chr1:1000-2000
-4. Returns matching variants
-
-Data transferred: 1GB+ (entire file!)
-Time: minutes or fails on timeout
-```
-
-**This is why indexes are critical for remote files!**
-
-#### Bandwidth Comparison
-
-For a 1GB VCF file, querying chr1:1-100000:
-
-| Scenario | Bytes Transferred | Time |
-|----------|------------------|------|
-| Indexed remote (HTTPS) | ~200KB + 500KB | 1-2 seconds |
-| Indexed remote (S3) | ~200KB + 500KB | <1 second |
-| Indexed remote (FTP) | ~200KB + 500KB | 3-5 seconds |
-| Unindexed remote | 1000MB+ | 5-30 minutes |
-| Local indexed file | ~200KB + 500KB | <0.5 seconds |
 
 ## 2. S3 Remote File Access
 
