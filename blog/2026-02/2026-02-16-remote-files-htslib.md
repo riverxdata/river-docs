@@ -65,13 +65,13 @@ HTSlib URL scheme handlers present:
 
 **Protocol categories:**
 
-| Category | Protocols | Typical Use |
-|----------|-----------|------------|
-| **Built-in** | file, preload, data | Local files, pipes |
-| **Cloud Storage** | s3://, gs:// | AWS, Google Cloud |
-| **HTTP-based** | http://, https://, ftps:// | Web servers, FTP over SSL |
-| **Other** | ftp://, sftp://, scp://, smb:// | Traditional file servers |
-| **Specialized** | mqtt, dict, imap, etc | Not typical for genomics |
+| Category          | Protocols                       | Typical Use               |
+| ----------------- | ------------------------------- | ------------------------- |
+| **Built-in**      | file, preload, data             | Local files, pipes        |
+| **Cloud Storage** | s3://, gs://                    | AWS, Google Cloud         |
+| **HTTP-based**    | http://, https://, ftps://      | Web servers, FTP over SSL |
+| **Other**         | ftp://, sftp://, scp://, smb:// | Traditional file servers  |
+| **Specialized**   | mqtt, dict, imap, etc           | Not typical for genomics  |
 
 **Note on protocol coverage:** This blog focuses on the most common protocols for bioinformatics: **S3, HTTPS, FTP, and GCS**. Many other protocols are available but less commonly used for genomic data.
 
@@ -83,7 +83,7 @@ The following protocols are widely used for storing and accessing genomic data:
 - **URL scheme**: `s3://bucket-name/path/file.vcf.gz`
 - **Use case**: Cloud-based genomic repositories, AWS-hosted data
 - **Random access**: Via byte-range requests, AWS SDK for auth
-- **Speed**: Fastest (typically <1 second for indexed queries)
+- **Speed**: Fastest (typically \<1 second for indexed queries)
 - **See section**: 2 - S3 Remote File Access
 
 #### HTTPS (Web servers)
@@ -104,7 +104,7 @@ The following protocols are widely used for storing and accessing genomic data:
 - **URL scheme**: `gs://bucket-name/path/file.vcf.gz`
 - **Use case**: Google Cloud-hosted genomic data
 - **Random access**: Similar to S3 (byte-range requests)
-- **Speed**: Fast (typically <1 second for indexed queries)
+- **Speed**: Fast (typically \<1 second for indexed queries)
 - **Note**: Requires Google Cloud SDK credentials
 
 ### 1.4 Key Advantages of Remote Access
@@ -124,13 +124,13 @@ Remote file access requires indexed files for efficient region-based queries:
 
 **Bandwidth comparison for 1GB VCF file querying chr1:1-100000:**
 
-| Scenario | Bytes Transferred | Time | Method |
-|----------|------------------|------|--------|
-| **Indexed S3** | ~700KB | <1 second | Byte-range request |
-| **Indexed HTTPS** | ~700KB | 1-2 seconds | HTTP Range header |
-| **Indexed FTP** | ~700KB | 3-5 seconds | FTP REST seek |
-| **Unindexed remote** | 1000MB+ | 5-30 minutes | Sequential download |
-| **Local indexed file** | ~700KB | <0.5 seconds | Direct file seek |
+| Scenario               | Bytes Transferred | Time          | Method              |
+| ---------------------- | ----------------- | ------------- | ------------------- |
+| **Indexed S3**         | ~700KB            | \<1 second    | Byte-range request  |
+| **Indexed HTTPS**      | ~700KB            | 1-2 seconds   | HTTP Range header   |
+| **Indexed FTP**        | ~700KB            | 3-5 seconds   | FTP REST seek       |
+| **Unindexed remote**   | 1000MB+           | 5-30 minutes  | Sequential download |
+| **Local indexed file** | ~700KB            | \<0.5 seconds | Direct file seek    |
 
 **Critical insight**: Indexed remote access downloads only 0.07% of file size!
 
