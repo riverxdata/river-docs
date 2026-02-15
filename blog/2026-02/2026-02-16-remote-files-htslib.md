@@ -184,34 +184,59 @@ tabix -p vcf local_subset.vcf.gz
 bcftools annotate local_subset.vcf.gz -a annotation.vcf.gz -c ID
 ```
 
-### 2.5 Working with 1000 Genomes Data
+### 2.5 Working with Public Genomic Data
 
-The 1000 Genomes Project provides public data in S3 with no-sign-request access, making it perfect for testing remote file queries.
+Public genomic repositories are excellent for testing remote file access. While S3 is available, HTTPS endpoints are often more reliable for quick testing.
+
+**Query NCBI dbSNP data via HTTPS:**
+
+NCBI provides public access to common variants. Test with real data:
+
+```bash
+# Query NCBI dbSNP common variants (via HTTPS)
+pixi run bcftools view \
+  https://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF/00-common_all.vcf.gz \
+  | pixi run bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\n' \
+  | head -20
+```
+
+Expected output showing real variants:
+
+```
+1	10177	A	AC
+1	10352	T	TA
+1	10352	T	TA
+1	10616	CCGCCGTTGCAAAGGCGCGCCG	C
+1	10642	G	A
+1	11008	C	G
+1	11012	C	G
+```
 
 **Discover available files:**
 
 ```bash
-# List available data (requires AWS CLI)
-aws s3 ls s3://1000genomes/phase3/data/ --no-sign-request | head -20
+# List NCBI FTP VCF files
+curl -s https://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF/ \
+  | grep -i ".vcf.gz\"" | grep -o "href=\"[^\"]*\"" | cut -d'"' -f2
 
-# List specific file types
-aws s3 ls s3://1000genomes/phase1/analysis_results/integrated_call_sets/ --no-sign-request | grep chr1
+# Or for 1000 Genomes in S3:
+aws s3 ls s3://1000genomes/phase3/data/ --no-sign-request | head -20
 ```
 
-**Query 1000 Genomes data with bcftools:**
+**Region-based queries (with indexed files):**
 
 ```bash
-# Query variants from 1000 Genomes Phase 1
-# Note: Some files are very large; start with smaller validation files
-bcftools view \
-  s3://1000genomes/phase1/analysis_results/experimental_validation/snps/ALL.chr20.exome_consensus_validation_454.20120118.snp.exome.sites.fixed.vcf.gz \
-  | bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\n' \
-  | head -20
+# Query specific chromosome region
+# Note: Requires .tbi index at the remote location
+pixi run bcftools view \
+  https://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF/00-common_all.vcf.gz \
+  chr1:1000000-2000000
 ```
 
-**Testing with real S3 data:**
-
-Before querying large production files, practice with the test workflow from section 5.4. This ensures your bcftools and samtools are correctly configured for remote access. Then gradually scale to real files.
+**Note on S3 vs HTTPS:**
+- **HTTPS** (like NCBI): Reliable, requires no credentials for public data
+- **S3**: Fastest for large datasets, requires AWS credentials or public bucket setup
+- **FTP**: Alternative for some repositories, generally slower than HTTPS
 
 ## 3. FTP Remote File Access
 
@@ -698,17 +723,19 @@ pixi run samtools --version
 **Using remote files:**
 
 ```bash
-# 1. Set up authentication (if using private S3)
+# 1. Set up authentication (optional, for private buckets)
 export AWS_ACCESS_KEY_ID="..."
 export AWS_SECRET_ACCESS_KEY="..."
 export AWS_DEFAULT_REGION="us-east-1"
 
-# 2. Query remote indexed file
-pixi run bcftools view s3://my-bucket/variants.vcf.gz chr1:1-1000000
+# 2. Query real remote file (NCBI dbSNP via HTTPS - no auth needed)
+pixi run bcftools view \
+  https://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF/00-common_all.vcf.gz \
+  | pixi run bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\n' \
+  | head -20
 
-# 3. Process locally if needed
-pixi run bcftools view s3://my-bucket/variants.vcf.gz chr1:1-1000000 \
-  -O v -o chr1_subset.vcf
+# 3. Or for your own S3 data:
+pixi run bcftools view s3://my-bucket/variants.vcf.gz chr1:1-1000000 -O v -o chr1_subset.vcf
 
 # 4. Create local index for repeated use
 pixi run bgzip -f chr1_subset.vcf
