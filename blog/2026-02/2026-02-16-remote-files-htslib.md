@@ -164,6 +164,21 @@ Data transferred:
 
 **Requirement**: Server must support HTTP Range Requests (most modern servers do).
 
+**Verify Range Request Support:**
+
+```bash
+# Check if a remote server supports Range Requests
+curl -I -H "Range: bytes=0-500" https://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF/00-common_all_papu.vcf.gz
+
+# Look for HTTP 206 in response:
+# HTTP/1.1 206 Partial Content
+# Accept-Ranges: bytes
+# Content-Length: 501
+
+# If you see "206 Partial Content" → Range Requests work! ✓
+# If you see "200 OK" → Server ignores Range header (slower but still works)
+```
+
 #### FTP
 
 ```
